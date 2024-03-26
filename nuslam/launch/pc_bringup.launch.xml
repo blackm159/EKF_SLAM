@@ -1,0 +1,71 @@
+<launch>
+    <arg name='use_rviz' default="true"/>
+    <arg name='cmd_src' default="circle"/>
+    
+
+    <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share nuslam)/config/nuslam_turtlebot.rviz  -f nusim/world" if="$(eval '\'$(var use_rviz)\' == \'true\'')" />
+
+    
+
+    <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.py" >
+        <arg name="use_rviz" value="false" />
+        <arg name="color" value="blue" />
+        <arg name="use_jsp" value="false" />
+    </include>
+
+    <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.py" >
+        <arg name="use_rviz" value="false" />
+        <arg name="color" value="green" />
+        <arg name="use_jsp" value="true" />
+    </include>
+
+
+    <node pkg="nuturtle_control" exec="odometry_node" >
+        <param name="body_id" value="blue/base_footprint" />
+        <param name="odom_id" value="odom" />
+        <param name="wheel_left" value="blue/wheel_left" />
+        <param name="wheel_right" value="blue/wheel_right" />
+        <param from="$(find-pkg-share nuturtle_description)/config/diff_params.yaml"/>
+        <remap from="joint_states" to="blue/joint_states" />
+        <remap from="path" to="blue/path" />
+    </node>
+
+
+    <node pkg="nuturtle_control" exec="turtle_control_node" >
+        <param from="$(find-pkg-share nuturtle_description)/config/diff_params.yaml"/>
+        <!-- <remap from="wheel_cmd" to="red/wheel_cmd" /> -->
+        <remap from="joint_states" to="blue/joint_states" />
+    </node>
+
+
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="nusim_world_to_odom" args="--frame-id nusim/world --child-frame-id odom" />
+
+
+    <!-- Command Sources -->
+    <node pkg="nuturtle_control" exec="circle_node" if="$(eval '\'$(var cmd_src)\' == \'circle\'')" >
+        <param name="frequency" value="100.0"/>
+    </node>
+
+    <node pkg="turtlebot3_teleop" exec="teleop_keyboard" if="$(eval '\'$(var cmd_src)\' == \'teleop\'')" launch-prefix="xterm -e"/>
+
+
+
+    <!-- SLAM -->
+    <node pkg="nuslam" exec="nuslam_node" >
+    </node>
+
+    
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="nusim_world_to_map" args="--frame-id nusim/world --child-frame-id map" />
+
+
+
+    <!-- Landmarks -->
+    <node pkg="nuslam" exec="landmarks_node" />
+
+
+
+
+
+
+
+</launch>

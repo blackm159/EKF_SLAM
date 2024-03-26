@@ -1,0 +1,16 @@
+**/.vscode/**
+
+**/build/**
+**/log/**
+**/install/**
+
+**/__pycache__/**
+
+/turtlelib/Catch2
+/Testing/**
+
+svg_lib_example.svg
+
+Tasks.md
+
+citations.txt

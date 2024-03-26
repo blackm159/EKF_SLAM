@@ -1,0 +1,19 @@
+<launch>
+    <arg name='cmd_src' default="circle"/>
+    <arg name='robot' default="nusim"/>
+    <arg name='use_rviz' default="false"/>
+
+    <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share nuslam)/config/nuslam_hw4.rviz  -f nusim/world" />
+
+    <include file="$(find-pkg-share nuslam)/launch/slam.launch.xml" >
+        <arg name="use_rviz" value="$(var use_rviz)" />
+        <arg name="robot" value="$(var robot)" />
+        <arg name="cmd_src" value="$(var cmd_src)" />
+    </include>
+
+
+    <node pkg="nuslam" exec="landmarks_node" >
+        <remap from="scan" to="laser" />
+    </node>
+
+</launch>

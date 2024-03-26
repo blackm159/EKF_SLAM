@@ -1,0 +1,13 @@
+<launch>
+    <catch2_launch_file description='An example Catch2 integration test launch file'/>
+
+    <node pkg="nuturtle_control" exec="circle_node">
+    </node>
+
+    <catch2_integration_test_node
+        pkg='nuturtle_control'
+        exec='turtle_circle_test_node'
+    >
+
+    </catch2_integration_test_node>
+</launch>
